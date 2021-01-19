@@ -11,19 +11,6 @@ import * as selectors from '../selectors';
 import * as resolvers from '../resolvers';
 import { store } from '../';
 
-// Mock to prevent calling window.fetch in test environment
-jest.mock( '@wordpress/data-controls', () => {
-	const dataControls = jest.requireActual( '@wordpress/data-controls' );
-	return {
-		...dataControls,
-		apiFetch: jest.fn(),
-	};
-} );
-const { apiFetch: actualApiFetch } = jest.requireActual(
-	'@wordpress/data-controls'
-);
-import { apiFetch } from '@wordpress/data-controls';
-
 jest.mock( '@wordpress/api-fetch', () => {
 	return {
 		__esModule: true,
