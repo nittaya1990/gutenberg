@@ -11,7 +11,10 @@ import {
 	registerLegacyWidgetBlock,
 	registerLegacyWidgetVariations,
 } from '@wordpress/widgets';
-import { setFreeformContentHandlerName } from '@wordpress/blocks';
+import {
+	setFreeformContentHandlerName,
+	store as blocksStore,
+} from '@wordpress/blocks';
 import { dispatch } from '@wordpress/data';
 import { store as interfaceStore } from '@wordpress/interface';
 
@@ -40,6 +43,7 @@ export function initialize( editorName, blockEditorSettings ) {
 		welcomeGuide: true,
 	} );
 
+	dispatch( blocksStore ).__experimentalReapplyBlockTypeFilters();
 	const coreBlocks = __experimentalGetCoreBlocks().filter( ( block ) => {
 		return ! (
 			DISABLED_BLOCKS.includes( block.name ) ||

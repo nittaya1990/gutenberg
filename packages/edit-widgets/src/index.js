@@ -5,7 +5,9 @@ import {
 	registerBlockType,
 	unstable__bootstrapServerSideBlockDefinitions, // eslint-disable-line camelcase
 	setFreeformContentHandlerName,
+	store as blocksStore,
 } from '@wordpress/blocks';
+import { dispatch } from '@wordpress/data';
 import { render, unmountComponentAtNode } from '@wordpress/element';
 import {
 	registerCoreBlocks,
@@ -17,7 +19,6 @@ import {
 	registerLegacyWidgetBlock,
 	registerLegacyWidgetVariations,
 } from '@wordpress/widgets';
-import { dispatch } from '@wordpress/data';
 import { store as interfaceStore } from '@wordpress/interface';
 
 /**
@@ -80,6 +81,7 @@ export function initialize( id, settings ) {
 		themeStyles: true,
 	} );
 
+	dispatch( blocksStore ).__experimentalReapplyBlockTypeFilters();
 	registerCoreBlocks( coreBlocks );
 	registerLegacyWidgetBlock();
 	if ( process.env.GUTENBERG_PHASE === 2 ) {
