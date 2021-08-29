@@ -93,58 +93,47 @@ export function NumberControl(
 				nextValue = subtract( nextValue, incrementalValue );
 			}
 
-			nextValue = roundClamp( nextValue, min, max, incrementalValue );
-
-			state.value = nextValue;
+			state.value = constrainValue( nextValue );
 		}
 
 		/**
 		 * Handles drag to update events
 		 */
 		if ( type === inputControlActionTypes.DRAG && isDragEnabled ) {
-			const { delta, shiftKey } = payload;
-			const [ x, y ] = delta;
-			const modifier = shiftKey
+			const modifier = payload.shiftKey
 				? parseFloat( shiftStep ) * baseStep
 				: baseStep;
 
 			let directionModifier;
-			let directionBaseValue;
+			let delta;
 
 			switch ( dragDirection ) {
 				case 'n':
-					directionBaseValue = y;
+					delta = payload.delta[ 1 ];
 					directionModifier = -1;
 					break;
 
 				case 'e':
-					directionBaseValue = x;
+					delta = payload.delta[ 0 ];
 					directionModifier = isRTL() ? -1 : 1;
 					break;
 
 				case 's':
-					directionBaseValue = y;
+					delta = payload.delta[ 1 ];
 					directionModifier = 1;
 					break;
 
 				case 'w':
-					directionBaseValue = x;
+					delta = payload.delta[ 0 ];
 					directionModifier = isRTL() ? 1 : -1;
 					break;
 			}
 
-			const distance = directionBaseValue * modifier * directionModifier;
-			let nextValue;
+			if ( delta !== 0 ) {
+				delta = Math.ceil( Math.abs( delta ) ) * Math.sign( delta );
+				const distance = delta * modifier * directionModifier;
 
-			if ( distance !== 0 ) {
-				nextValue = roundClamp(
-					add( currentValue, distance ),
-					min,
-					max,
-					modifier
-				);
-
-				state.value = nextValue;
+				state.value = constrainValue( add( currentValue, distance ) );
 			}
 		}
 

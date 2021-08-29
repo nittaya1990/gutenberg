@@ -177,7 +177,7 @@ describe( 'NumberControl', () => {
 			input.focus();
 			fireKeyDown( { keyCode: UP, shiftKey: true } );
 
-			expect( input.value ).toBe( '20' );
+			expect( input.value ).toBe( '15' );
 		} );
 
 		it( 'should increment by custom shiftStep on key UP + shift press', () => {
@@ -187,7 +187,7 @@ describe( 'NumberControl', () => {
 			input.focus();
 			fireKeyDown( { keyCode: UP, shiftKey: true } );
 
-			expect( input.value ).toBe( '100' );
+			expect( input.value ).toBe( '105' );
 		} );
 
 		it( 'should increment but be limited by max on shiftStep', () => {
@@ -261,7 +261,7 @@ describe( 'NumberControl', () => {
 			input.focus();
 			fireKeyDown( { keyCode: DOWN, shiftKey: true } );
 
-			expect( input.value ).toBe( '0' );
+			expect( input.value ).toBe( '-5' );
 		} );
 
 		it( 'should decrement by custom shiftStep on key DOWN + shift press', () => {
@@ -271,7 +271,7 @@ describe( 'NumberControl', () => {
 			input.focus();
 			fireKeyDown( { keyCode: DOWN, shiftKey: true } );
 
-			expect( input.value ).toBe( '-100' );
+			expect( input.value ).toBe( '-95' );
 		} );
 
 		it( 'should decrement but be limited by min on shiftStep', () => {
