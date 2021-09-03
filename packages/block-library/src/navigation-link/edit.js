@@ -296,7 +296,7 @@ const useIsInvalidLink = ( kind, type, id ) => {
 	return [ isInvalid, isDraft ];
 };
 
-const useMissingText = ( type, isInvalid ) => {
+const useMissingText = ( type ) => {
 	let missingText = '';
 
 	switch ( type ) {
@@ -321,22 +321,7 @@ const useMissingText = ( type, isInvalid ) => {
 			missingText = __( 'Add link' );
 	}
 
-	return (
-		<>
-			<span>{ missingText }</span>
-			{ isInvalid && (
-				<span className="wp-block-navigation-link__invalid-item">
-					{ ' ' }
-					(
-					{ __(
-						/* translators: Whether or not the navigation link is invalid. */
-						'Invalid'
-					) }
-					)
-				</span>
-			) }
-		</>
-	);
+	return <span>{ missingText }</span>;
 };
 
 export default function NavigationLinkEdit( {
@@ -678,7 +663,7 @@ export default function NavigationLinkEdit( {
 				{ /* eslint-disable jsx-a11y/anchor-is-valid */ }
 				<a className={ classes }>
 					{ /* eslint-enable */ }
-					{ ! url || isInvalid ? (
+					{ ! url ? (
 						<div className="wp-block-navigation-link__placeholder-text">
 							<KeyboardShortcuts
 								shortcuts={ {
@@ -720,6 +705,26 @@ export default function NavigationLinkEdit( {
 									}
 								} }
 							/>
+							{ isInvalid && (
+								<div className="wp-block-navigation-link__placeholder-text">
+									<KeyboardShortcuts
+										shortcuts={ {
+											enter: () =>
+												isSelected &&
+												setIsLinkOpen( true ),
+										} }
+									/>
+									<span>
+										{ ' ' }
+										(
+										{ __(
+											/* translators: Whether or not the navigation link is invalid. */
+											'Invalid'
+										) }
+										)
+									</span>
+								</div>
+							) }
 							{ isDraft && (
 								<span>
 									{ ' ' }
