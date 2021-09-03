@@ -9,7 +9,7 @@ import type { ColorFormats } from 'tinycolor2';
  * WordPress dependencies
  */
 import { useState } from '@wordpress/element';
-import { moreVertical } from '@wordpress/icons';
+import { settings } from '@wordpress/icons';
 import { useDebounce } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 
@@ -115,7 +115,7 @@ const ColorPicker = (
 				) }
 				<Button
 					onClick={ () => setShowInputs( ! showInputs ) }
-					icon={ moreVertical }
+					icon={ settings }
 					isPressed={ showInputs }
 					label={
 						showInputs
