@@ -65,6 +65,13 @@ function gutenberg_get_layout_style( $selector, $layout ) {
 		$style .= "$selector .alignright { float: right; margin-left: 2em; }";
 		$style .= "$selector > * + * { margin-top: var( --wp--style--block-gap ); margin-bottom: 0; }";
 	} elseif ( 'flex' === $layout_type ) {
+		$justify_content_options = array(
+			'left'          => 'flex-start',
+			'right'         => 'flex-end',
+			'center'        => 'center',
+			'space-between' => 'space-between',
+		);
+
 		$style  = "$selector {";
 		$style .= 'display: flex;';
 		$style .= 'gap: var( --wp--style--block-gap, 0.5em );';
@@ -75,8 +82,8 @@ function gutenberg_get_layout_style( $selector, $layout ) {
 		 * since we intend to convert blocks that had flex layout implemented
 		 * by custom css.
 		 */
-		if ( ! empty( $layout['justifyContent'] ) ) {
-			$style .= "justify-content: {$layout['justifyContent']};";
+		if ( ! empty( $layout['justifyContent'] ) && array_key_exists( $layout['justifyContent'], $justify_content_options ) ) {
+			$style .= "justify-content: {$justify_content_options[ $layout['justifyContent'] ]};";
 		}
 		$style .= '}';
 
