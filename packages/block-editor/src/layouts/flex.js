@@ -11,7 +11,7 @@ import {
  * Internal dependencies
  */
 import { appendSelectors } from './utils';
-import { BlockControls, JustifyContentControl } from '../index';
+import { BlockControls, JustifyContentControl } from '../components';
 
 const justifyContentMap = {
 	left: 'flex-start',
