@@ -2,6 +2,9 @@
  * WordPress dependencies
  */
 import { apiFetch } from '@wordpress/data-controls';
+import triggerFetch from '@wordpress/api-fetch';
+
+jest.mock( '@wordpress/api-fetch' );
 
 /**
  * Internal dependencies
@@ -16,10 +19,8 @@ import {
 } from '../resolvers';
 import {
 	receiveEntityRecords,
-	receiveEmbedPreview,
 	receiveUserPermission,
 	receiveAutosaves,
-	receiveCurrentUser,
 } from '../actions';
 
 describe( 'getEntityRecord', () => {
@@ -193,26 +194,35 @@ describe( 'getEmbedPreview', () => {
 	const EMBEDDABLE_URL = 'http://twitter.com/notnownikki';
 	const UNEMBEDDABLE_URL = 'http://example.com/';
 
+	beforeEach( async () => {
+		triggerFetch.mockReset();
+	} );
+
 	it( 'yields with fetched embed preview', async () => {
-		const fulfillment = getEmbedPreview( EMBEDDABLE_URL );
-		// Trigger generator
-		fulfillment.next();
-		// Provide apiFetch response and trigger Action
-		const received = ( await fulfillment.next( SUCCESSFUL_EMBED_RESPONSE ) )
-			.value;
-		expect( received ).toEqual(
-			receiveEmbedPreview( EMBEDDABLE_URL, SUCCESSFUL_EMBED_RESPONSE )
+		const dispatch = Object.assign( jest.fn(), {
+			receiveEmbedPreview: jest.fn(),
+		} );
+		triggerFetch.mockImplementation( () => SUCCESSFUL_EMBED_RESPONSE );
+		await getEmbedPreview( EMBEDDABLE_URL )( { dispatch } );
+
+		expect( dispatch.receiveEmbedPreview ).toHaveBeenCalledWith(
+			EMBEDDABLE_URL,
+			SUCCESSFUL_EMBED_RESPONSE
 		);
 	} );
 
 	it( 'yields false if the URL cannot be embedded', async () => {
-		const fulfillment = getEmbedPreview( UNEMBEDDABLE_URL );
-		// Trigger generator
-		fulfillment.next();
-		// Provide invalid response and trigger Action
-		const received = ( await fulfillment.throw( { status: 404 } ) ).value;
-		expect( received ).toEqual(
-			receiveEmbedPreview( UNEMBEDDABLE_URL, UNEMBEDDABLE_RESPONSE )
+		const dispatch = Object.assign( jest.fn(), {
+			receiveEmbedPreview: jest.fn(),
+		} );
+		triggerFetch.mockImplementation( () =>
+			Promise.reject( { status: 404 } )
+		);
+		await getEmbedPreview( UNEMBEDDABLE_URL )( { dispatch } );
+
+		expect( dispatch.receiveEmbedPreview ).toHaveBeenCalledWith(
+			UNEMBEDDABLE_URL,
+			UNEMBEDDABLE_RESPONSE
 		);
 	} );
 } );
@@ -383,15 +393,19 @@ describe( 'getCurrentUser', () => {
 		id: 1,
 	};
 
+	beforeEach( async () => {
+		triggerFetch.mockReset();
+	} );
+
 	it( 'yields with fetched user', async () => {
-		const fulfillment = getCurrentUser();
+		const dispatch = Object.assign( jest.fn(), {
+			receiveCurrentUser: jest.fn(),
+		} );
+		triggerFetch.mockImplementation( () => SUCCESSFUL_RESPONSE );
+		await getCurrentUser()( { dispatch } );
 
-		// Trigger generator
-		fulfillment.next();
-
-		// Provide apiFetch response and trigger Action
-		const received = ( await fulfillment.next( SUCCESSFUL_RESPONSE ) )
-			.value;
-		expect( received ).toEqual( receiveCurrentUser( SUCCESSFUL_RESPONSE ) );
+		expect( dispatch.receiveCurrentUser ).toHaveBeenCalledWith(
+			SUCCESSFUL_RESPONSE
+		);
 	} );
 } );

@@ -9,6 +9,7 @@ import { find, includes, get, hasIn, compact, uniq } from 'lodash';
 import { addQueryArgs } from '@wordpress/url';
 import { controls } from '@wordpress/data';
 import { apiFetch } from '@wordpress/data-controls';
+import triggerFetch from '@wordpress/api-fetch';
 /**
  * Internal dependencies
  */
@@ -19,12 +20,7 @@ import { STORE_NAME } from './name';
  * Internal dependencies
  */
 import {
-	receiveUserQuery,
-	receiveCurrentTheme,
-	receiveCurrentUser,
 	receiveEntityRecords,
-	receiveThemeSupports,
-	receiveEmbedPreview,
 	receiveUserPermission,
 	receiveAutosaves,
 } from './actions';
@@ -37,22 +33,22 @@ import { ifNotResolved, getNormalizedCommaSeparable } from './utils';
  * @param {Object|undefined} query Optional object of query parameters to
  *                                 include with request.
  */
-export function* getAuthors( query ) {
+export const getAuthors = ( query ) => async ( { dispatch } ) => {
 	const path = addQueryArgs(
 		'/wp/v2/users/?who=authors&per_page=100',
 		query
 	);
-	const users = yield apiFetch( { path } );
-	yield receiveUserQuery( path, users );
-}
+	const users = await triggerFetch( { path } );
+	dispatch.receiveUserQuery( path, users );
+};
 
 /**
  * Requests the current user from the REST API.
  */
-export function* getCurrentUser() {
-	const currentUser = yield apiFetch( { path: '/wp/v2/users/me' } );
-	yield receiveCurrentUser( currentUser );
-}
+export const getCurrentUser = () => async ( { dispatch } ) => {
+	const currentUser = await triggerFetch( { path: '/wp/v2/users/me' } );
+	dispatch.receiveCurrentUser( currentUser );
+};
 
 /**
  * Requests an entity's record from the REST API.
@@ -251,39 +247,39 @@ getEntityRecords.shouldInvalidate = ( action, kind, name ) => {
 /**
  * Requests the current theme.
  */
-export function* getCurrentTheme() {
-	const activeThemes = yield apiFetch( {
+export const getCurrentTheme = () => async ( { dispatch } ) => {
+	const activeThemes = await triggerFetch( {
 		path: '/wp/v2/themes?status=active',
 	} );
-	yield receiveCurrentTheme( activeThemes[ 0 ] );
-}
+	return dispatch.receiveCurrentTheme( activeThemes[ 0 ] );
+};
 
 /**
  * Requests theme supports data from the index.
  */
-export function* getThemeSupports() {
-	const activeThemes = yield apiFetch( {
+export const getThemeSupports = () => async ( { dispatch } ) => {
+	const activeThemes = await triggerFetch( {
 		path: '/wp/v2/themes?status=active',
 	} );
-	yield receiveThemeSupports( activeThemes[ 0 ].theme_supports );
-}
+	return dispatch.receiveThemeSupports( activeThemes[ 0 ].theme_supports );
+};
 
 /**
  * Requests a preview from the from the Embed API.
  *
  * @param {string} url URL to get the preview for.
  */
-export function* getEmbedPreview( url ) {
+export const getEmbedPreview = ( url ) => async ( { dispatch } ) => {
 	try {
-		const embedProxyResponse = yield apiFetch( {
+		const embedProxyResponse = await triggerFetch( {
 			path: addQueryArgs( '/oembed/1.0/proxy', { url } ),
 		} );
-		yield receiveEmbedPreview( url, embedProxyResponse );
+		return dispatch.receiveEmbedPreview( url, embedProxyResponse );
 	} catch ( error ) {
 		// Embed API 404s if the URL cannot be embedded, so we have to catch the error from the apiRequest here.
-		yield receiveEmbedPreview( url, false );
+		return dispatch.receiveEmbedPreview( url, false );
 	}
-}
+};
 
 /**
  * Checks whether the current user can perform the given action on the given
