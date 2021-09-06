@@ -13,7 +13,6 @@ import triggerFetch from '@wordpress/api-fetch';
 /**
  * Internal dependencies
  */
-import { regularFetch } from './controls';
 import { STORE_NAME } from './name';
 
 /**
@@ -401,17 +400,20 @@ export function* getAutosave( postType, postId ) {
  *
  * @param {string} link Link.
  */
-export function* __experimentalGetTemplateForLink( link ) {
+
+export const __experimentalGetTemplateForLink = ( link ) => async ( {
+	dispatch,
+	resolveSelect,
+} ) => {
 	// Ideally this should be using an apiFetch call
 	// We could potentially do so by adding a "filter" to the `wp_template` end point.
 	// Also it seems the returned object is not a regular REST API post type.
 	let template;
 	try {
-		template = yield regularFetch(
-			addQueryArgs( link, {
-				'_wp-find-template': true,
-			} )
-		);
+		template = await window
+			.fetch( addQueryArgs( link, { '_wp-find-template': true } ) )
+			.then( ( res ) => res.json() )
+			.then( ( { data } ) => data );
 	} catch ( e ) {
 		// For non-FSE themes, it is possible that this request returns an error.
 	}
@@ -420,21 +422,18 @@ export function* __experimentalGetTemplateForLink( link ) {
 		return;
 	}
 
-	yield getEntityRecord( 'postType', 'wp_template', template.id );
-	const record = yield controls.select(
-		STORE_NAME,
-		'getEntityRecord',
+	const record = await resolveSelect.getEntityRecord(
 		'postType',
 		'wp_template',
 		template.id
 	);
 
 	if ( record ) {
-		yield receiveEntityRecords( 'postType', 'wp_template', [ record ], {
+		dispatch.receiveEntityRecords( 'postType', 'wp_template', [ record ], {
 			'find-template': link,
 		} );
 	}
-}
+};
 
 __experimentalGetTemplateForLink.shouldInvalidate = ( action ) => {
 	return (
