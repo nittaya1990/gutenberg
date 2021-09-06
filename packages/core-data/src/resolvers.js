@@ -9,6 +9,7 @@ import { find, includes, get, hasIn, compact, uniq } from 'lodash';
 import { addQueryArgs } from '@wordpress/url';
 import { controls } from '@wordpress/data';
 import { apiFetch } from '@wordpress/data-controls';
+import triggerFetch from '@wordpress/api-fetch';
 /**
  * Internal dependencies
  */
@@ -25,7 +26,6 @@ import {
 	receiveEntityRecords,
 	receiveThemeSupports,
 	receiveEmbedPreview,
-	receiveUserPermission,
 	receiveAutosaves,
 } from './actions';
 import { getKindEntities, DEFAULT_ENTITY_KEY } from './entities';
@@ -294,7 +294,7 @@ export function* getEmbedPreview( url ) {
  * @param {string}  resource REST resource to check, e.g. 'media' or 'posts'.
  * @param {?string} id       ID of the rest resource to check.
  */
-export function* canUser( action, resource, id ) {
+export const canUser = ( action, resource, id ) => async ( { dispatch } ) => {
 	const methods = {
 		create: 'POST',
 		read: 'GET',
@@ -311,7 +311,7 @@ export function* canUser( action, resource, id ) {
 
 	let response;
 	try {
-		response = yield apiFetch( {
+		response = await triggerFetch( {
 			path,
 			// Ideally this would always be an OPTIONS request, but unfortunately there's
 			// a bug in the REST API which causes the Allow header to not be sent on
@@ -339,8 +339,8 @@ export function* canUser( action, resource, id ) {
 
 	const key = compact( [ action, resource, id ] ).join( '/' );
 	const isAllowed = includes( allowHeader, method );
-	yield receiveUserPermission( key, isAllowed );
-}
+	dispatch.receiveUserPermission( key, isAllowed );
+};
 
 /**
  * Checks whether the current user can perform the given action on the given
@@ -350,16 +350,18 @@ export function* canUser( action, resource, id ) {
  * @param {string} name     Entity name.
  * @param {string} recordId Record's id.
  */
-export function* canUserEditEntityRecord( kind, name, recordId ) {
-	const entities = yield getKindEntities( kind );
+export const canUserEditEntityRecord = ( kind, name, recordId ) => async ( {
+	dispatch,
+} ) => {
+	const entities = await dispatch( getKindEntities( kind ) );
 	const entity = find( entities, { kind, name } );
 	if ( ! entity ) {
 		return;
 	}
 
 	const resource = entity.__unstable_rest_base;
-	yield canUser( 'update', resource, recordId );
-}
+	await dispatch( canUser( 'update', resource, recordId ) );
+};
 
 /**
  * Request autosave data from the REST API.
