@@ -9,6 +9,7 @@ import { find, includes, get, hasIn, compact, uniq } from 'lodash';
 import { addQueryArgs } from '@wordpress/url';
 import { controls } from '@wordpress/data';
 import { apiFetch } from '@wordpress/data-controls';
+import triggerFetch from '@wordpress/api-fetch';
 /**
  * Internal dependencies
  */

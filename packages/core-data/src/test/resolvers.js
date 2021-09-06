@@ -2,6 +2,9 @@
  * WordPress dependencies
  */
 import { apiFetch } from '@wordpress/data-controls';
+import triggerFetch from '@wordpress/api-fetch';
+
+jest.mock( '@wordpress/api-fetch' );
 
 /**
  * Internal dependencies
