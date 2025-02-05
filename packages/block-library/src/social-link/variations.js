@@ -5,9 +5,11 @@ import {
 	AmazonIcon,
 	BandcampIcon,
 	BehanceIcon,
+	BlueskyIcon,
 	ChainIcon,
 	CodepenIcon,
 	DeviantArtIcon,
+	DiscordIcon,
 	DribbbleIcon,
 	DropboxIcon,
 	EtsyIcon,
@@ -19,6 +21,7 @@ import {
 	GoodreadsIcon,
 	GoogleIcon,
 	GitHubIcon,
+	GravatarIcon,
 	InstagramIcon,
 	LastfmIcon,
 	LinkedInIcon,
@@ -35,13 +38,16 @@ import {
 	SoundCloudIcon,
 	SpotifyIcon,
 	TelegramIcon,
+	ThreadsIcon,
 	TiktokIcon,
 	TumblrIcon,
 	TwitchIcon,
 	TwitterIcon,
 	VimeoIcon,
 	VkIcon,
+	WhatsAppIcon,
 	WordPressIcon,
+	XIcon,
 	YelpIcon,
 	YouTubeIcon,
 } from './icons';
@@ -80,6 +86,12 @@ const variations = [
 		icon: BehanceIcon,
 	},
 	{
+		name: 'bluesky',
+		attributes: { service: 'bluesky' },
+		title: 'Bluesky',
+		icon: BlueskyIcon,
+	},
+	{
 		name: 'chain',
 		attributes: { service: 'chain' },
 		title: 'Link',
@@ -96,6 +108,12 @@ const variations = [
 		attributes: { service: 'deviantart' },
 		title: 'DeviantArt',
 		icon: DeviantArtIcon,
+	},
+	{
+		name: 'discord',
+		attributes: { service: 'discord' },
+		title: 'Discord',
+		icon: DiscordIcon,
 	},
 	{
 		name: 'dribbble',
@@ -156,6 +174,12 @@ const variations = [
 		attributes: { service: 'github' },
 		title: 'GitHub',
 		icon: GitHubIcon,
+	},
+	{
+		name: 'gravatar',
+		attributes: { service: 'gravatar' },
+		title: 'Gravatar',
+		icon: GravatarIcon,
 	},
 	{
 		name: 'instagram',
@@ -255,6 +279,12 @@ const variations = [
 		icon: TelegramIcon,
 	},
 	{
+		name: 'threads',
+		attributes: { service: 'threads' },
+		title: 'Threads',
+		icon: ThreadsIcon,
+	},
+	{
 		name: 'tiktok',
 		attributes: { service: 'tiktok' },
 		title: 'TikTok',
@@ -291,6 +321,19 @@ const variations = [
 		icon: VkIcon,
 	},
 	{
+		name: 'whatsapp',
+		attributes: { service: 'whatsapp' },
+		title: 'WhatsApp',
+		icon: WhatsAppIcon,
+	},
+	{
+		name: 'x',
+		attributes: { service: 'x' },
+		keywords: [ 'twitter' ],
+		title: 'X',
+		icon: XIcon,
+	},
+	{
 		name: 'yelp',
 		attributes: { service: 'yelp' },
 		title: 'Yelp',
@@ -310,7 +353,9 @@ const variations = [
  *  Block by providing its attributes.
  */
 variations.forEach( ( variation ) => {
-	if ( variation.isActive ) return;
+	if ( variation.isActive ) {
+		return;
+	}
 	variation.isActive = ( blockAttributes, variationAttributes ) =>
 		blockAttributes.service === variationAttributes.service;
 } );
